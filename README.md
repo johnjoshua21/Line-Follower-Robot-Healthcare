@@ -15,7 +15,7 @@ ESP32 Dev Module (Receiver)
 
 IR Sensors (For line following)
 
-LED & Photodiode (For LiFi transmission)
+LED & LDR (For LiFi transmission)
 
 Motor Driver (L298N) (To control motors)
 
