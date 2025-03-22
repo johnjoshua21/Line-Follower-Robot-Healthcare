@@ -1,0 +1,85 @@
+// Line Follower + Obstacle Avoidance Robot
+
+#define IR_LEFT 2     // Left IR sensor
+#define IR_RIGHT 3    // Right IR sensor
+#define TRIG 9        // Ultrasonic sensor trigger pin
+#define ECHO 10       // Ultrasonic sensor echo pin
+
+#define MOTOR_L_FWD 5   // Left motor forward
+#define MOTOR_L_BWD 6   // Left motor backward
+#define MOTOR_R_FWD 7   // Right motor forward
+#define MOTOR_R_BWD 8   // Right motor backward
+
+void setup() {
+    pinMode(IR_LEFT, INPUT);
+    pinMode(IR_RIGHT, INPUT);
+    pinMode(TRIG, OUTPUT);
+    pinMode(ECHO, INPUT);
+
+    pinMode(MOTOR_L_FWD, OUTPUT);
+    pinMode(MOTOR_L_BWD, OUTPUT);
+    pinMode(MOTOR_R_FWD, OUTPUT);
+    pinMode(MOTOR_R_BWD, OUTPUT);
+}
+
+void loop() {
+    int leftIR = digitalRead(IR_LEFT);
+    int rightIR = digitalRead(IR_RIGHT);
+    int distance = getDistance();  // Get obstacle distance
+
+    if (distance < 15) {  // Obstacle detected within 15 cm
+        stopRobot();
+        delay(1000);
+        turnRight();
+        delay(500);
+    } 
+    else if (leftIR == LOW && rightIR == LOW) {  // Both sensors on black line
+        moveForward();
+    } 
+    else if (leftIR == LOW && rightIR == HIGH) {  // Left sensor on black
+        turnLeft();
+    } 
+    else if (leftIR == HIGH && rightIR == LOW) {  // Right sensor on black
+        turnRight();
+    } 
+    else {  // No line detected
+        stopRobot();
+    }
+}
+
+int getDistance() {
+    digitalWrite(TRIG, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG, LOW);
+    return pulseIn(ECHO, HIGH) / 58;  // Convert to cm
+}
+
+void moveForward() {
+    digitalWrite(MOTOR_L_FWD, HIGH);
+    digitalWrite(MOTOR_L_BWD, LOW);
+    digitalWrite(MOTOR_R_FWD, HIGH);
+    digitalWrite(MOTOR_R_BWD, LOW);
+}
+
+void turnLeft() {
+    digitalWrite(MOTOR_L_FWD, LOW);
+    digitalWrite(MOTOR_L_BWD, LOW);
+    digitalWrite(MOTOR_R_FWD, HIGH);
+    digitalWrite(MOTOR_R_BWD, LOW);
+}
+
+void turnRight() {
+    digitalWrite(MOTOR_L_FWD, HIGH);
+    digitalWrite(MOTOR_L_BWD, LOW);
+    digitalWrite(MOTOR_R_FWD, LOW);
+    digitalWrite(MOTOR_R_BWD, LOW);
+}
+
+void stopRobot() {
+    digitalWrite(MOTOR_L_FWD, LOW);
+    digitalWrite(MOTOR_L_BWD, LOW);
+    digitalWrite(MOTOR_R_FWD, LOW);
+    digitalWrite(MOTOR_R_BWD, LOW);
+}
